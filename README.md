@@ -1,16 +1,6 @@
-# cierre_diario2
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Cierre Diario2
+<h4>cierre_diario2: app para Realizar los cierre diario de su negocio</h4>
+<div style"display:inline">
+<img src="im1.png" width="30%"/> 
+<img src="im2.png" width="30%"/> 
+</div>

@@ -75,11 +75,11 @@ class DailyClosingService extends ChangeNotifier {
     return sales;
   }
 
-  double getSales(List<DailyClosingModel> list) {
+  double getSales(List<DailyClosingModel> list,{bool isMine=false}) {
     double sales = 0;
     int i = 0;
     for (var element in list) {
-      sales += (element.cost! * element.amount!);
+      sales += ((isMine?element.price!:element.cost!) * element.amount!);
     }
     return sales;
   }

@@ -46,8 +46,8 @@ android {
         applicationId "com.example.cierre_diario2"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 2
+        versionName 1.0.1
     }
 
     buildTypes {

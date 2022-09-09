@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../utils/calc/show_calc.dart';
+import '../../../../utils/coin_converter.dart';
+
 class CreateOrEditDailyClosing extends StatefulWidget {
   final DailyClosingModel? dailyClosingModel;
   const CreateOrEditDailyClosing({Key? key, this.dailyClosingModel}) : super(key: key);
@@ -17,6 +20,9 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
   bool _validateF = false;
   GlobalKey<FormState> _keyForm = new GlobalKey();
   DailyClosingModel dailyClosingModel = DailyClosingModel();
+  TextEditingController costController = TextEditingController();
+  TextEditingController salesController = TextEditingController();
+
   String title = 'Adicionar';
   late bool supplier=false;
   
@@ -39,7 +45,10 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
       dailyClosingModel.supplier = widget.dailyClosingModel?.supplier;
       supplier= widget.dailyClosingModel!.supplier!=''?true:false;
 
+    costController.text = formatCoinForm( dailyClosingModel.cost!);
+    salesController.text = formatCoinForm( dailyClosingModel.price!);
     }
+
     super.initState();
   }
 
@@ -118,24 +127,31 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Nombre", icon: Icon(Icons.shopping_cart_rounded)),
                 ),
-                TextFormField(
-                  initialValue: (widget.dailyClosingModel != null) ? dailyClosingModel.cost!.formatCoinForm() : null,
+                TextFormField(readOnly: true,
                   validator: validator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   maxLength: 15,
+                  controller: costController,
                   keyboardType: TextInputType.numberWithOptions(),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^(\d?)+\.?\d{0,2}')),
                     /* LengthLimitingTextInputFormatter(25) */
-                  ],
+                  ],onTap:() {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    showCalc(context, amount: costController.text).then((v) {
+                      if (v != null) {
+                       costController.text = v; 
+                      }
+                    });
+                  
+                  },
                   onSaved: (value) {
                     dailyClosingModel.cost = double.parse(value!);
                   },
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Costo de mercancía", icon: Icon(Icons.content_paste)),
                 ),
-                TextFormField(
-                  initialValue: (widget.dailyClosingModel != null) ? dailyClosingModel.price!.formatCoinForm() : null,
+                TextFormField(readOnly: true,
                   validator: validator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   maxLength: 15,
@@ -143,9 +159,17 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^(\d?)+\.?\d{0,2}')),
                     /* LengthLimitingTextInputFormatter(25) */
-                  ],
+                  ],controller: salesController,
                   onSaved: (value) {
                     dailyClosingModel.price = double.parse(value!);
+                  },onTap:() {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    showCalc(context, amount: salesController.text).then((v) {
+                      if (v != null) {
+                       salesController.text = v; 
+                      }
+                    });
+                  
                   },
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Precio de mercancía", icon: Icon(Icons.content_paste)),
