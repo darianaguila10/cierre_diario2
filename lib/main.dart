@@ -1,5 +1,6 @@
 import 'package:cierre_diario2/features/daily_closing/services/daily_closing_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'features/daily_closing/ui/pages/daily_closing.page.dart';
@@ -19,7 +20,15 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => DailyClosingService()),
       ],
-      child: MaterialApp(
+      child: MaterialApp(  localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('en', 'US'),
+            const Locale('es', 'ES'),
+          ],
         title: 'Cierre diario',
         theme: ThemeData(dialogBackgroundColor: Color(0xFF2c2c2c),dialogTheme: DialogTheme(
           shape:  RoundedRectangleBorder(

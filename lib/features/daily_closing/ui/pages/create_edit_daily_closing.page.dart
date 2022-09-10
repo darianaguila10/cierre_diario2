@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttercontactpicker/fluttercontactpicker.dart';
+import 'package:provider/provider.dart';
+
 import 'package:cierre_diario2/database/models/daily_closing.model.dart';
 import 'package:cierre_diario2/features/daily_closing/services/daily_closing_service.dart';
 import 'package:cierre_diario2/utils/extensions.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../utils/calc/show_calc.dart';
 import '../../../../utils/coin_converter.dart';
@@ -22,10 +24,11 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
   DailyClosingModel dailyClosingModel = DailyClosingModel();
   TextEditingController costController = TextEditingController();
   TextEditingController salesController = TextEditingController();
+  TextEditingController proveedorController = TextEditingController();
 
   String title = 'Adicionar';
-  late bool supplier=false;
-  
+  late bool supplier = false;
+
   @override
   void dispose() {
     super.dispose();
@@ -33,7 +36,6 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
 
   @override
   void initState() {
-
     if (widget.dailyClosingModel != null) {
       title = 'Actualizar';
       dailyClosingModel.id = widget.dailyClosingModel?.id;
@@ -43,10 +45,14 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
       dailyClosingModel.price = widget.dailyClosingModel?.price;
       dailyClosingModel.amount = widget.dailyClosingModel?.amount;
       dailyClosingModel.supplier = widget.dailyClosingModel?.supplier;
-      supplier= widget.dailyClosingModel!.supplier!=''?true:false;
 
-    costController.text = formatCoinForm( dailyClosingModel.cost!);
-    salesController.text = formatCoinForm( dailyClosingModel.price!);
+      if (widget.dailyClosingModel!.supplier != '') {
+        supplier = true;
+        proveedorController.text = dailyClosingModel.supplier!;
+      }
+
+      costController.text = formatCoinForm(dailyClosingModel.cost!);
+      salesController.text = formatCoinForm(dailyClosingModel.price!);
     }
 
     super.initState();
@@ -127,7 +133,8 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Nombre", icon: Icon(Icons.shopping_cart_rounded)),
                 ),
-                TextFormField(readOnly: true,
+                TextFormField(
+                  readOnly: true,
                   validator: validator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   maxLength: 15,
@@ -136,14 +143,14 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^(\d?)+\.?\d{0,2}')),
                     /* LengthLimitingTextInputFormatter(25) */
-                  ],onTap:() {
-                      FocusScope.of(context).requestFocus(new FocusNode());
+                  ],
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     showCalc(context, amount: costController.text).then((v) {
                       if (v != null) {
-                       costController.text = v; 
+                        costController.text = v;
                       }
                     });
-                  
                   },
                   onSaved: (value) {
                     dailyClosingModel.cost = double.parse(value!);
@@ -151,7 +158,8 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Costo de mercancía", icon: Icon(Icons.content_paste)),
                 ),
-                TextFormField(readOnly: true,
+                TextFormField(
+                  readOnly: true,
                   validator: validator,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   maxLength: 15,
@@ -159,44 +167,61 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^(\d?)+\.?\d{0,2}')),
                     /* LengthLimitingTextInputFormatter(25) */
-                  ],controller: salesController,
+                  ],
+                  controller: salesController,
                   onSaved: (value) {
                     dailyClosingModel.price = double.parse(value!);
-                  },onTap:() {
-                      FocusScope.of(context).requestFocus(new FocusNode());
+                  },
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     showCalc(context, amount: salesController.text).then((v) {
                       if (v != null) {
-                       salesController.text = v; 
+                        salesController.text = v;
                       }
                     });
-                  
                   },
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(0), labelText: "Precio de mercancía", icon: Icon(Icons.content_paste)),
                 ),
-                SizedBox(height: 20,),
-                SwitchListTile(controlAffinity: ListTileControlAffinity.trailing,contentPadding: EdgeInsets.zero,
-                    value: supplier,title: Text('Es de un proveedor'),
+                SizedBox(
+                  height: 20,
+                ),
+                SwitchListTile(
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    contentPadding: EdgeInsets.zero,
+                    value: supplier,
+                    title: Text('Es de un proveedor'),
                     onChanged: (v) {
                       setState(() {
                         supplier = v;
                       });
                     }),
-                SizedBox(height: 20,),
-
-
-                    supplier?
-                TextFormField(
-                  initialValue: dailyClosingModel.supplier,
-                  validator: validator,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  maxLength: 30,
-                  onSaved: (value) {
-                    dailyClosingModel.supplier = value;
-                  },
-                  decoration:
-                      const InputDecoration(contentPadding: EdgeInsets.all(0), labelText: "Proveedor", icon: Icon(Icons.person)),
-                ):SizedBox(),
+                SizedBox(
+                  height: 20,
+                ),
+                supplier
+                    ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Expanded(
+                            child: TextFormField(
+                          validator: validator,
+                          controller: proveedorController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          maxLength: 30,
+                          onSaved: (value) {
+                            dailyClosingModel.supplier = value;
+                          },
+                          decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(0), labelText: "Proveedor", icon: Icon(Icons.person)),
+                        )),
+                        IconButton(
+                          icon: Icon(
+                            Icons.contacts,
+                            color: Colors.grey,
+                          ),
+                          onPressed: loadContact,
+                        )
+                      ])
+                    : SizedBox(),
                 SizedBox(
                   height: 50,
                 ),
@@ -252,6 +277,26 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
       setState(() {
         _validateF = true;
       });
+    }
+  }
+
+  loadContact() async {
+    if (!await FlutterContactPicker.hasPermission()) {
+      await FlutterContactPicker.requestPermission();
+    }
+    if (!await FlutterContactPicker.hasPermission()) return;
+
+    try {
+      final PhoneContact? contact = await FlutterContactPicker.pickPhoneContact();
+
+      if (contact != null) {
+        setState(() {
+          proveedorController.text = contact.fullName!;
+          FocusScope.of(context).requestFocus(FocusNode());
+        });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

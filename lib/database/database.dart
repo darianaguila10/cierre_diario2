@@ -60,7 +60,7 @@ class DatabaseHelper {
       
 
     List<Map> maps = await dbClient.rawQuery("select  $field "
-        "FROM daily_closing;");
+        "FROM daily_closing order by daily_closing.supplier;");
         
     return maps
         .map((i) => DailyClosingModel.fromMap(i))

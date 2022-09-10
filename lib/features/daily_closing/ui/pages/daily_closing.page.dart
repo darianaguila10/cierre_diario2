@@ -219,7 +219,7 @@ class _GetBodyState extends State<GetBody> {
           ),
           itemBuilder: (context, DailyClosingModel element) {
             return MerchandiseCard(
-              key: Key(element.id.toString()),
+              key:UniqueKey(),
               dailyClosingModel: element,
               onTap: () {},
               backgroundColor: Color(0xFF313030),

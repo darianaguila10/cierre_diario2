@@ -12,8 +12,7 @@ class DailyClosingService extends ChangeNotifier {
 
   bool isLoading = true;
   bool noData = false;
-  double sales = 0;
-  double profit = 0;
+  double salesTotal = 0;
 
   DailyClosingService() {
     loadDailyClosingData(first: true);
@@ -67,12 +66,12 @@ class DailyClosingService extends ChangeNotifier {
   }
 
   double getTotalSales() {
-    double sales = 0;
+     salesTotal = 0;
     int i = 0;
     for (var element in dailyClosingList) {
-      sales += (element.price! * element.amount!);
+      salesTotal += (element.price! * element.amount!);
     }
-    return sales;
+    return salesTotal;
   }
 
   double getSales(List<DailyClosingModel> list,{bool isMine=false}) {

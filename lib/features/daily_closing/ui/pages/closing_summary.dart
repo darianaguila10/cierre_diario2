@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -77,8 +78,8 @@ class _ClosingSummaryState extends State<ClosingSummary> {
                           ),
                         ),
                         Flexible(
-                            child: headerColum(
-                                'Venta', dailyClosingService.getSales(mapDailyClosing[keys[index]]!, isMine: keys[index] == ''))),
+                            child: headerColum((keys[index] == '') ? 'Venta' : 'Venta + G',
+                                dailyClosingService.getSales(mapDailyClosing[keys[index]]!, isMine: keys[index] == ''))),
                         if (keys[index] == '')
                           Flexible(
                               child: headerColum('Inversión', dailyClosingService.getInversion(mapDailyClosing[keys[index]]!))),
@@ -159,39 +160,43 @@ class _ClosingSummaryState extends State<ClosingSummary> {
     );
   }
 
-  Future<void> _captureSocialPng(DailyClosingService dailyClosingService, List<String> keys, Map<String, List<DailyClosingModel>> mapDailyClosing) {
-    List<String> imagePaths = [];
+  Future<void> _captureSocialPng(
+      DailyClosingService dailyClosingService, List<String> keys, Map<String, List<DailyClosingModel>> mapDailyClosing) {
     String listP = '';
+    DateTime now = DateTime.now();
+    listP += '-----CIERRE DIARIO-----\n';
+    listP += '--${(DateFormat('EEEE', "es").format(now)).capitalizeString()} ${now.day}/${now.month}/${now.year}--\n\n';
+
+    listP += '****Venta total****\n${dailyClosingService.salesTotal.formatCoin()} \n\n';
 
     for (var item in keys) {
-      String venta = (dailyClosingService.getSales(mapDailyClosing[item]!, isMine: item == '').formatCoin().toString());
-      listP += '\n------------\n';
-      listP += (item == '' ? 'Harold' : item.capitalizeString() ) + ' -- '+ venta;
-      listP += '\n------------\n';
+      String venta = (dailyClosingService.getSales(mapDailyClosing[item]!, isMine: item == '').formatCoin());
+      listP += (item == '' ? 'Harold' : item.capitalizeString());
+      listP += '\n******************\n';
+      listP +=  'V = $venta\n';
+      if (item == '') {
+        listP += 'I = ${dailyClosingService.getInversion(mapDailyClosing[item]!).formatCoin()}\n';
+        listP += 'G = ${dailyClosingService.getProfits().formatCoin()}\n';
+      }
+      if (mapDailyClosing[item]!.length > 0 && mapDailyClosing[item]![0].amount! > 0) {
+        print(mapDailyClosing[item]!.length);
+        listP += '\n';
+      }
 
       for (var element in mapDailyClosing[item]!) {
         if (element.amount != 0) {
           listP += element.name! + ' - ' + element.amount.toString() + '\n';
         }
       }
+      listP += '******************\n';
+
       listP += '\n\n';
     }
     print(listP);
-    final RenderBox box = context.findRenderObject() as RenderBox;
     return Future.delayed(const Duration(milliseconds: 20), () async {
-      RenderRepaintBoundary? boundary = previewContainer.currentContext!.findRenderObject() as RenderRepaintBoundary?;
-      ui.Image image = await boundary!.toImage();
-      final directory = (await getApplicationDocumentsDirectory()).path;
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
-      File imgFile = File('$directory/screenshot.png');
-      imagePaths.add(imgFile.path);
-      imgFile.writeAsBytes(pngBytes).then((value) async {
-        await Share.shareFiles(imagePaths,
-            subject: 'Share', text: listP, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
-      }).catchError((onError) {
-        print(onError);
-      });
+      await Share.share(listP);
+    }).catchError((onError) {
+      print(onError);
     });
   }
 }
