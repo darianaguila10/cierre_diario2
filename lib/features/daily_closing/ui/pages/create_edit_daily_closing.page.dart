@@ -43,7 +43,6 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
       dailyClosingModel.name = widget.dailyClosingModel?.name;
       dailyClosingModel.cost = widget.dailyClosingModel?.cost;
       dailyClosingModel.price = widget.dailyClosingModel?.price;
-      dailyClosingModel.amount = widget.dailyClosingModel?.amount;
       dailyClosingModel.supplier = widget.dailyClosingModel?.supplier;
 
       if (widget.dailyClosingModel!.supplier != '') {
@@ -230,7 +229,7 @@ class _CreateOrEditDailyClosingState extends State<CreateOrEditDailyClosing> {
                   children: <Widget>[
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF353535),
+                        backgroundColor: Color(0xFF353535),
                         shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(30.0),
                         ),

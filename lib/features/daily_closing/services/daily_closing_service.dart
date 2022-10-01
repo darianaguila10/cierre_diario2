@@ -35,7 +35,7 @@ class DailyClosingService extends ChangeNotifier {
 
   Future<void> search(String text) async {
     dailyClosingListToShow.clear();
-    dailyClosingListToShow.addAll(dailyClosingList.where((element) => element.name!.contains(text.toLowerCase())).toList());
+    dailyClosingListToShow.addAll(dailyClosingList.where((element) => element.name!.toLowerCase().contains(text.toLowerCase())).toList());
 
     notifyListeners();
   }
@@ -104,7 +104,8 @@ class DailyClosingService extends ChangeNotifier {
 
   void changeValue(DailyClosingModel dailyClosingModel) {
     dailyClosingList = dailyClosingList.map((e) => e.id == dailyClosingModel.id ? dailyClosingModel : e).toList();
-
+    dailyClosingListToShow = dailyClosingListToShow.map((e) => e.id == dailyClosingModel.id ? dailyClosingModel : e).toList();
+ 
     notifyListeners();
   }
 

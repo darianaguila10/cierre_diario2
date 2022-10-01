@@ -30,6 +30,7 @@ class _MerchandiseCardState extends State<MerchandiseCard> with WidgetsBindingOb
 
   @override
   void dispose() {
+    print('dispose');
     WidgetsBinding.instance!.removeObserver(this);
     inputFocusNode.dispose();
     _numberController.dispose();
@@ -38,6 +39,7 @@ class _MerchandiseCardState extends State<MerchandiseCard> with WidgetsBindingOb
 
   @override
   void didChangeMetrics() {
+      print('didChangeMetrics');
     super.didChangeMetrics();
     final value = WidgetsBinding.instance!.window.viewInsets.bottom;
     if (value == 0) {
@@ -113,7 +115,7 @@ class _MerchandiseCardState extends State<MerchandiseCard> with WidgetsBindingOb
                             focusNode: inputFocusNode,
                             controller: _numberController,
                             onChanged: (v) {
-                              if (widget.dailyClosingModel.amount != '') {
+                              if (v != '') {
                                 widget.dailyClosingModel.amount = int.parse(v);
                                 dailyClosingService.changeValue(widget.dailyClosingModel);
                               } else {

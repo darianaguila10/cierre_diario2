@@ -19,20 +19,23 @@ class DailyClosingPage extends StatefulWidget {
 class _DailyClosingPageState extends State<DailyClosingPage> {
   @override
   Widget build(BuildContext context) {
+    bool keyboardIsOpened = MediaQuery.of(context).viewInsets.bottom == 0.0;
     final dailyClosingService = Provider.of<DailyClosingService>(context);
 
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ClosingSummary()),
-            );
-          },
-          child: Icon(Icons.check),
-          backgroundColor: Color(0xFF495754),
+        floatingActionButton: Visibility(visible:keyboardIsOpened ,
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ClosingSummary()),
+              );
+            },
+            child: Icon(Icons.check),
+            backgroundColor: Color(0xFF495754),
+          ),
         ),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: const Text('Cierre diario'),
           actions: [
@@ -127,7 +130,7 @@ class _DailyClosingPageState extends State<DailyClosingPage> {
 class GetBody extends StatefulWidget {
   final DailyClosingService dailyClosingService;
 
-  GetBody(this.dailyClosingService);
+  GetBody(this.dailyClosingService, {Key? key}) : super(key: key);
 
   @override
   State<GetBody> createState() => _GetBodyState();
@@ -194,9 +197,10 @@ class _GetBodyState extends State<GetBody> {
       Expanded(
         child: GroupedListView<DailyClosingModel, String>(
           elements: widget.dailyClosingService.dailyClosingListToShow,
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
+          itemComparator: (e1, e2) => e1.name!.toLowerCase().compareTo(e2.name!.toLowerCase()),
           groupBy: (element) => element.supplier!,
-          padding: EdgeInsets.only(bottom: 80, left: 10, right: 10, top: 10),
+          padding: const EdgeInsets.only(bottom: 80, left: 10, right: 10, top: 10),
           groupSeparatorBuilder: (String groupByValue) => SizedBox(
             height: 40,
             child: Align(
@@ -219,7 +223,7 @@ class _GetBodyState extends State<GetBody> {
           ),
           itemBuilder: (context, DailyClosingModel element) {
             return MerchandiseCard(
-              key:UniqueKey(),
+              key: Key(element.id!.toString()),
               dailyClosingModel: element,
               onTap: () {},
               backgroundColor: Color(0xFF313030),
